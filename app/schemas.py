@@ -120,3 +120,20 @@ class ProyeccionOut(BaseModel):
     dias_restantes: float | None
     confiable: bool
     mensaje: str
+
+
+# --- Simulación (datos de prueba, solo admin) ---
+
+class SimulacionIn(BaseModel):
+    dias: int = Field(default=14, ge=1, le=90)
+    lecturas_por_dia: int = Field(default=12, ge=1, le=48)
+    porcentaje_inicial: float = Field(default=90, ge=0, le=100)
+    porcentaje_final: float = Field(default=10, ge=0, le=100)
+    ruido_pct: float = Field(default=2.0, ge=0, le=20)
+    borrar_anteriores: bool = False
+
+
+class SimulacionOut(BaseModel):
+    silo_id: int
+    lecturas_insertadas: int
+    borradas: int

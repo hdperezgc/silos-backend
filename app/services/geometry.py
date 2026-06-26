@@ -55,3 +55,36 @@ def calcular_nivel(
         "porcentaje": round(min(porcentaje, 100.0), 2),
         "kg_estimados": round(kg_estimados, 1),
     }
+
+
+def calcular_distancia_desde_porcentaje(
+    porcentaje: float,
+    altura_cono_m: float,
+    altura_cilindro_m: float,
+    diametro_m: float,
+) -> float:
+    """
+    Inversa de calcular_nivel: dado un porcentaje de volumen deseado,
+    devuelve la distancia (cm) que el sensor reportaría. Se usa solo para
+    generar datos simulados realistas, nunca para procesar lecturas reales.
+    """
+    radio_m = diametro_m / 2
+    altura_util_m = altura_cono_m + altura_cilindro_m
+
+    cono_vol_m3 = (1 / 3) * math.pi * radio_m**2 * altura_cono_m
+    cilindro_vol_m3 = math.pi * radio_m**2 * altura_cilindro_m
+    total_vol_m3 = cono_vol_m3 + cilindro_vol_m3
+
+    porcentaje = max(0.0, min(100.0, porcentaje))
+    vol_objetivo_m3 = (porcentaje / 100) * total_vol_m3
+
+    if vol_objetivo_m3 <= cono_vol_m3:
+        proporcion = (vol_objetivo_m3 / cono_vol_m3) ** (1 / 3) if cono_vol_m3 > 0 else 0
+        altura_alimento_m = altura_cono_m * proporcion
+    else:
+        vol_restante = vol_objetivo_m3 - cono_vol_m3
+        proporcion_cilindro = vol_restante / cilindro_vol_m3 if cilindro_vol_m3 > 0 else 0
+        altura_alimento_m = altura_cono_m + altura_cilindro_m * proporcion_cilindro
+
+    distancia_libre_m = altura_util_m - altura_alimento_m
+    return round(max(0.0, distancia_libre_m) * 100, 2)

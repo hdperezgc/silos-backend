@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.routers import auth, fincas, lecturas, proyeccion, silos
+from app.routers import auth, fincas, lecturas, proyeccion, silos, simulacion
 
 app = FastAPI(title="Granjazul - Monitoreo de silos", version="0.1.0")
 
@@ -19,6 +19,7 @@ app.include_router(fincas.router)
 app.include_router(silos.router)
 app.include_router(lecturas.router)
 app.include_router(proyeccion.router)
+app.include_router(simulacion.router)
 
 
 @app.get("/health")
