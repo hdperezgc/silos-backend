@@ -28,6 +28,18 @@ class UsuarioOut(BaseModel):
         from_attributes = True
 
 
+class UsuarioCreate(BaseModel):
+    nombre: str = Field(min_length=2, max_length=120)
+    email: EmailStr
+    password: str = Field(min_length=8)
+    rol: RolUsuario = RolUsuario.visor
+
+
+class UsuarioUpdate(BaseModel):
+    rol: RolUsuario | None = None
+    activo: bool | None = None
+
+
 # --- Fincas ---
 
 class FincaOut(BaseModel):
