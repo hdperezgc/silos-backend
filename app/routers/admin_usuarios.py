@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -69,3 +70,28 @@ def actualizar_usuario(
     db.commit()
     db.refresh(usuario)
     return usuario
+
+
+class PasswordReset(BaseModel):
+    nueva_password: str = Field(min_length=8)
+
+
+@router.patch("/{usuario_id}/password", status_code=204)
+def resetear_password(
+    usuario_id: int,
+    payload: PasswordReset,
+    db: Session = Depends(get_db),
+    usuario_actual=Depends(require_roles(RolUsuario.admin)),
+):
+    if usuario_id == usuario_actual.id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Usá el perfil para cambiar tu propia contraseña",
+        )
+
+    usuario = db.query(Usuario).filter(Usuario.id == usuario_id).first()
+    if usuario is None:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    usuario.password_hash = hash_password(payload.nueva_password)
+    db.commit()
