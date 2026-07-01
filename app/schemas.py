@@ -149,3 +149,12 @@ class SimulacionOut(BaseModel):
     silo_id: int
     lecturas_insertadas: int
     borradas: int
+
+
+class LlenadoIn(BaseModel):
+    porcentaje: float = Field(default=100, ge=0, le=100)
+
+
+class DescargaIn(BaseModel):
+    porcentaje_bajada: float = Field(gt=0, le=100)
+    hace_horas: float = Field(default=0, ge=0)
