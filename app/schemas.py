@@ -137,10 +137,10 @@ class ProyeccionOut(BaseModel):
 # --- Simulación (datos de prueba, solo admin) ---
 
 class SimulacionIn(BaseModel):
+    kg_inicial: float = Field(gt=0)
+    kg_final: float = Field(ge=0)
     dias: int = Field(default=14, ge=1, le=90)
     lecturas_por_dia: int = Field(default=12, ge=1, le=48)
-    porcentaje_inicial: float = Field(default=90, ge=0, le=100)
-    porcentaje_final: float = Field(default=10, ge=0, le=100)
     ruido_pct: float = Field(default=2.0, ge=0, le=20)
     borrar_anteriores: bool = False
 
@@ -152,9 +152,9 @@ class SimulacionOut(BaseModel):
 
 
 class LlenadoIn(BaseModel):
-    porcentaje: float = Field(default=100, ge=0, le=100)
+    kg: float = Field(gt=0)
 
 
 class DescargaIn(BaseModel):
-    porcentaje_bajada: float = Field(gt=0, le=100)
+    kg_bajada: float = Field(gt=0)
     hace_horas: float = Field(default=0, ge=0)
