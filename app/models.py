@@ -24,6 +24,14 @@ class RolUsuario(str, enum.Enum):
     visor = "visor"
 
 
+class EstadoOrdenProduccion(str, enum.Enum):
+    sugerida = "sugerida"
+    confirmada = "confirmada"
+    en_proceso = "en_proceso"
+    completada = "completada"
+    cancelada = "cancelada"
+
+
 class Usuario(Base):
     __tablename__ = "usuarios"
 
@@ -64,11 +72,14 @@ class Silo(Base):
     capacidad_kg = Column(Numeric(10, 2), nullable=False)
     densidad_alimento_kg_m3 = Column(Numeric(8, 2), nullable=False)
 
+    lead_time_dias = Column(Integer, nullable=True)
+
     activo = Column(Boolean, nullable=False, default=True)
     creado_en = Column(DateTime(timezone=True), server_default=func.now())
 
     finca = relationship("Finca", back_populates="silos")
     sensor = relationship("Sensor", back_populates="silo", uselist=False)
+    ordenes_produccion = relationship("OrdenProduccion", back_populates="silo")
 
 
 class Sensor(Base):
@@ -98,3 +109,30 @@ class Lectura(Base):
     recibido_en = Column(DateTime(timezone=True), server_default=func.now())
 
     sensor = relationship("Sensor", back_populates="lecturas")
+
+
+class OrdenProduccion(Base):
+    __tablename__ = "ordenes_produccion"
+
+    id = Column(Integer, primary_key=True)
+    silo_id = Column(Integer, ForeignKey("silos.id", ondelete="RESTRICT"), nullable=False)
+    estado = Column(
+        Enum(EstadoOrdenProduccion, name="estado_orden_produccion"),
+        nullable=False,
+        default=EstadoOrdenProduccion.sugerida,
+    )
+
+    cantidad_kg_sugerida = Column(Numeric(10, 2), nullable=False)
+    cantidad_kg_confirmada = Column(Numeric(10, 2), nullable=True)
+
+    fecha_necesaria = Column(DateTime(timezone=True), nullable=False)
+
+    generada_por_usuario_id = Column(Integer, ForeignKey("usuarios.id"), nullable=True)
+    confirmada_por_usuario_id = Column(Integer, ForeignKey("usuarios.id"), nullable=True)
+
+    notas = Column(String(500), nullable=True)
+
+    creado_en = Column(DateTime(timezone=True), server_default=func.now())
+    actualizado_en = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    silo = relationship("Silo", back_populates="ordenes_produccion")
