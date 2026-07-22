@@ -109,7 +109,7 @@ class LecturaIn(BaseModel):
     device_id: str
     distancia_cm: float = Field(gt=0)
     voltaje_bateria: float = Field(gt=0, lt=5)
-    medido_en: datetime
+    medido_en: datetime | None = None  # si no llega, el backend usa la hora del servidor
 
 
 class LecturaOut(BaseModel):
