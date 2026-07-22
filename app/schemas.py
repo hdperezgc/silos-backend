@@ -2,7 +2,7 @@ from datetime import date, datetime
 
 from pydantic import BaseModel, EmailStr, Field
 
-from app.models import RolUsuario
+from app.models import EstadoOrdenProduccion, RolUsuario
 
 
 # --- Auth ---
@@ -68,6 +68,7 @@ class SiloCreate(BaseModel):
     altura_zona_ciega_cm: float = Field(ge=0)
     capacidad_kg: float = Field(gt=0)
     densidad_alimento_kg_m3: float = Field(gt=0)
+    lead_time_dias: int | None = Field(default=None, ge=0)
 
 
 class SiloOut(BaseModel):
@@ -83,6 +84,7 @@ class SiloOut(BaseModel):
     altura_zona_ciega_cm: float
     capacidad_kg: float
     densidad_alimento_kg_m3: float
+    lead_time_dias: int | None
     activo: bool
 
     class Config:
@@ -158,3 +160,32 @@ class LlenadoIn(BaseModel):
 class DescargaIn(BaseModel):
     kg_bajada: float = Field(gt=0)
     hace_horas: float = Field(default=0, ge=0)
+
+
+# --- Órdenes de producción ---
+
+class OrdenProduccionOut(BaseModel):
+    id: int
+    silo_id: int
+    estado: EstadoOrdenProduccion
+    cantidad_kg_sugerida: float
+    cantidad_kg_confirmada: float | None
+    fecha_necesaria: datetime
+    generada_por_usuario_id: int | None
+    confirmada_por_usuario_id: int | None
+    notas: str | None
+    creado_en: datetime
+    actualizado_en: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class OrdenProduccionConfirmar(BaseModel):
+    cantidad_kg_confirmada: float = Field(gt=0)
+    notas: str | None = Field(default=None, max_length=500)
+
+
+class OrdenProduccionActualizarEstado(BaseModel):
+    estado: EstadoOrdenProduccion
+    notas: str | None = Field(default=None, max_length=500)
