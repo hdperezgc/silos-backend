@@ -60,4 +60,3 @@ def historico_lecturas(
         query = query.filter(Lectura.medido_en <= hasta)
 
     return query.order_by(Lectura.medido_en.desc()).limit(limite).all()
-
