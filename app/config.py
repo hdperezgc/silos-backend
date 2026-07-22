@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     jwt_expire_minutes: int = 480
     cors_origins: str = ""
+    n8n_webhook_url: str = ""
 
     @property
     def cors_origins_list(self) -> list[str]:
