@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
@@ -26,7 +26,9 @@ def recibir_lectura(
         sensor_id=sensor.id,
         distancia_cm=payload.distancia_cm,
         voltaje_bateria=payload.voltaje_bateria,
-        medido_en=payload.medido_en,
+        # si el dispositivo no manda medido_en (ej. no tiene RTC ni hora de
+        # red confiable), usamos la hora real del servidor como respaldo
+        medido_en=payload.medido_en or datetime.now(timezone.utc),
     )
     db.add(lectura)
     db.commit()
