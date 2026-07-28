@@ -10,6 +10,7 @@ from app.routers import (
     lecturas,
     ordenes_produccion,
     proyeccion,
+    sensores,
     silos,
     simulacion,
 )
@@ -27,6 +28,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(fincas.router)
 app.include_router(silos.router)
+app.include_router(sensores.router)
 app.include_router(lecturas.router)
 app.include_router(proyeccion.router)
 app.include_router(simulacion.router)

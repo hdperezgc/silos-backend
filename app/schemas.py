@@ -105,6 +105,43 @@ class SiloDetalleOut(SiloOut):
     nivel_actual: NivelActual | None = None
 
 
+# --- Sensores ---
+
+class SensorCreate(BaseModel):
+    silo_id: int
+    device_id: str = Field(min_length=2, max_length=60)
+    modelo: str = Field(default="DYP-A01-V2.0", max_length=80)
+    fecha_instalacion: date
+
+
+class SensorOut(BaseModel):
+    id: int
+    silo_id: int
+    device_id: str
+    modelo: str
+    fecha_instalacion: date
+    activo: bool
+    creado_en: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class SensorCreadoOut(SensorOut):
+    api_key: str  # solo se devuelve completo al crear el sensor
+
+
+class SensorUpdate(BaseModel):
+    device_id: str | None = Field(default=None, min_length=2, max_length=60)
+    modelo: str | None = Field(default=None, max_length=80)
+    fecha_instalacion: date | None = None
+    activo: bool | None = None
+
+
+class SensorApiKeyOut(BaseModel):
+    api_key: str
+
+
 # --- Lecturas ---
 
 class LecturaIn(BaseModel):
