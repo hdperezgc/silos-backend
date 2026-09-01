@@ -122,6 +122,7 @@ class SensorOut(BaseModel):
     fecha_instalacion: date
     activo: bool
     intervalo_envio_seg: int
+    solicitud_lectura_pendiente: bool
     creado_en: datetime
 
     class Config:
@@ -145,9 +146,14 @@ class SensorApiKeyOut(BaseModel):
 
 
 class SensorConfigOut(BaseModel):
-    """Lo que el dispositivo recibe al consultar su propia configuración."""
+    """
+    Lo que el dispositivo recibe al consultar su propia configuración.
+    Incluye la bandera de solicitud para que, en la misma conexión GPRS,
+    el Arduino sepa tanto su intervalo normal como si debe reportar YA.
+    """
 
     intervalo_envio_seg: int
+    solicitud_lectura_pendiente: bool
 
 
 # --- Lecturas ---
