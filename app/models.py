@@ -92,6 +92,13 @@ class Sensor(Base):
     modelo = Column(String(80), nullable=False, default="DYP-A01-V2.0")
     fecha_instalacion = Column(Date, nullable=False)
     activo = Column(Boolean, nullable=False, default=True)
+
+    # Estas dos columnas ya las esperaba SensorOut/SensorUpdate en schemas.py
+    # pero nunca se habían agregado aquí ni en la base de datos real — se
+    # completan ahora junto con la función de "solicitar lectura".
+    intervalo_envio_seg = Column(Integer, nullable=False, default=300)
+    solicitud_lectura_pendiente = Column(Boolean, nullable=False, default=False)
+
     creado_en = Column(DateTime(timezone=True), server_default=func.now())
 
     silo = relationship("Silo", back_populates="sensor")
