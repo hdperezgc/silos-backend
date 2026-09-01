@@ -12,7 +12,6 @@ from app.routers import (
     proyeccion,
     sensores,
     silos,
-    simulacion,
 )
 
 app = FastAPI(title="Granjazul - Monitoreo de silos", version="0.1.0")
@@ -31,7 +30,6 @@ app.include_router(silos.router)
 app.include_router(sensores.router)
 app.include_router(lecturas.router)
 app.include_router(proyeccion.router)
-app.include_router(simulacion.router)
 app.include_router(admin_usuarios.router)
 app.include_router(bitacora.router)
 app.include_router(ordenes_produccion.router)
