@@ -121,6 +121,7 @@ class SensorOut(BaseModel):
     modelo: str
     fecha_instalacion: date
     activo: bool
+    intervalo_envio_seg: int
     creado_en: datetime
 
     class Config:
@@ -136,10 +137,17 @@ class SensorUpdate(BaseModel):
     modelo: str | None = Field(default=None, max_length=80)
     fecha_instalacion: date | None = None
     activo: bool | None = None
+    intervalo_envio_seg: int | None = Field(default=None, ge=30, le=86400)
 
 
 class SensorApiKeyOut(BaseModel):
     api_key: str
+
+
+class SensorConfigOut(BaseModel):
+    """Lo que el dispositivo recibe al consultar su propia configuración."""
+
+    intervalo_envio_seg: int
 
 
 # --- Lecturas ---
@@ -171,32 +179,6 @@ class ProyeccionOut(BaseModel):
     dias_restantes: float | None
     confiable: bool
     mensaje: str
-
-
-# --- Simulación (datos de prueba, solo admin) ---
-
-class SimulacionIn(BaseModel):
-    kg_inicial: float = Field(gt=0)
-    kg_final: float = Field(ge=0)
-    dias: int = Field(default=14, ge=1, le=90)
-    lecturas_por_dia: int = Field(default=12, ge=1, le=48)
-    ruido_pct: float = Field(default=2.0, ge=0, le=20)
-    borrar_anteriores: bool = False
-
-
-class SimulacionOut(BaseModel):
-    silo_id: int
-    lecturas_insertadas: int
-    borradas: int
-
-
-class LlenadoIn(BaseModel):
-    kg: float = Field(gt=0)
-
-
-class DescargaIn(BaseModel):
-    kg_bajada: float = Field(gt=0)
-    hace_horas: float = Field(default=0, ge=0)
 
 
 # --- Órdenes de producción ---
