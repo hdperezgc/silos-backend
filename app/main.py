@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
+from app.database import engine, Base
 from app.routers import (
     admin_usuarios,
     auth,
@@ -35,6 +36,13 @@ app.include_router(bitacora.router)
 app.include_router(ordenes_produccion.router)
 
 
+@app.on_event("startup")
+def startup_event():
+    """Crea todas las tablas en la base de datos si no existen"""
+    Base.metadata.create_all(bind=engine)
+
+
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
