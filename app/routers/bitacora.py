@@ -34,6 +34,7 @@ def _pct(distancia_cm: float, silo: Silo) -> float:
         diametro_m=float(silo.diametro_m),
         densidad_kg_m3=float(silo.densidad_alimento_kg_m3),
         altura_zona_ciega_cm=float(silo.altura_zona_ciega_cm),
+        offset_sensor_cm=float(silo.offset_sensor_cm) if silo.offset_sensor_cm is not None else 0.0,
     )
     return r["porcentaje"]
 

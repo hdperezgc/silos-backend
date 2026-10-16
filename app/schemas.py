@@ -66,9 +66,16 @@ class SiloCreate(BaseModel):
     altura_cilindro_m: float = Field(gt=0)
     angulo_cono_grados: float = Field(gt=0, lt=180)
     altura_zona_ciega_cm: float = Field(ge=0)
+    offset_sensor_cm: float | None = Field(default=None, ge=0)
     capacidad_kg: float = Field(gt=0)
     densidad_alimento_kg_m3: float = Field(gt=0)
     lead_time_dias: int | None = Field(default=None, ge=0)
+
+
+class SiloUpdate(BaseModel):
+    nombre: str | None = Field(default=None, min_length=2, max_length=120)
+    lead_time_dias: int | None = Field(default=None, ge=0)
+    offset_sensor_cm: float | None = Field(default=None, ge=0)
 
 
 class SiloOut(BaseModel):
@@ -82,6 +89,7 @@ class SiloOut(BaseModel):
     altura_cilindro_m: float
     angulo_cono_grados: float
     altura_zona_ciega_cm: float
+    offset_sensor_cm: float | None
     capacidad_kg: float
     densidad_alimento_kg_m3: float
     lead_time_dias: int | None
@@ -99,6 +107,7 @@ class NivelActual(BaseModel):
     kg_estimados: float
     medido_en: datetime
     voltaje_bateria: float
+    advertencia: str | None = None
 
 
 class SiloDetalleOut(SiloOut):
