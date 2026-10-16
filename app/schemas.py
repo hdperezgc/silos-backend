@@ -76,6 +76,7 @@ class SiloUpdate(BaseModel):
     nombre: str | None = Field(default=None, min_length=2, max_length=120)
     lead_time_dias: int | None = Field(default=None, ge=0)
     offset_sensor_cm: float | None = Field(default=None, ge=0)
+    activo: bool | None = None
 
 
 class SiloOut(BaseModel):

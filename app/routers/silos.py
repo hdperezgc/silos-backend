@@ -93,6 +93,8 @@ def actualizar_silo(
     datos = payload.model_dump(exclude_unset=True)
     if datos.get("nombre") is None:
         datos.pop("nombre", None)
+    if datos.get("activo") is None:
+        datos.pop("activo", None)
     for campo, valor in datos.items():
         setattr(silo, campo, valor)
 
