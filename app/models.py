@@ -69,6 +69,12 @@ class Silo(Base):
     angulo_cono_grados = Column(Numeric(5, 2), nullable=False)
     altura_zona_ciega_cm = Column(Numeric(6, 2), nullable=False)
 
+    # Distancia horizontal (cm) entre el eje central del silo y la posición
+    # real del sensor. NULL o 0 = sensor centrado. Se usa en
+    # services/geometry.py para saber desde qué altura del cono la pared
+    # inclinada le tapa la línea de medición vertical al sensor.
+    offset_sensor_cm = Column(Numeric(6, 2), nullable=True)
+
     capacidad_kg = Column(Numeric(10, 2), nullable=False)
     densidad_alimento_kg_m3 = Column(Numeric(8, 2), nullable=False)
 

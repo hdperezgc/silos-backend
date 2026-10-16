@@ -15,6 +15,7 @@ def calcular_nivel(
     diametro_m: float,
     densidad_kg_m3: float,
     altura_zona_ciega_cm: float,
+    offset_sensor_cm: float = 0.0,
 ) -> dict:
     radio_m = diametro_m / 2
     altura_util_m = altura_cono_m + altura_cilindro_m
@@ -32,6 +33,23 @@ def calcular_nivel(
     distancia_libre_m = distancia_cm / 100
     altura_alimento_m = altura_util_m - distancia_libre_m
     altura_alimento_m = max(0.0, min(altura_alimento_m, altura_util_m))
+
+    # Zona ciega geométrica por sensor descentrado. En un cono recto el radio
+    # a una altura h medida desde el vértice es r(h) = radio_m * h / altura_cono_m.
+    # Con el sensor a offset_m del eje, la línea vertical de medición choca con
+    # la pared del cono a la altura en que r(h) == offset_m. Por debajo de esa
+    # altura el sensor ya no ve la superficie real del alimento. El número no
+    # se modifica: solo se avisa que la lectura entra en zona dudosa.
+    advertencia = None
+    offset_m = max(0.0, offset_sensor_cm or 0.0) / 100
+    if offset_m > 0 and altura_cono_m > 0 and radio_m > 0:
+        altura_limite_vision_m = min(altura_cono_m, altura_cono_m * offset_m / radio_m)
+        if altura_alimento_m < altura_limite_vision_m:
+            advertencia = (
+                f"Nivel por debajo de la zona que alcanza a ver el sensor "
+                f"(montado a {offset_sensor_cm:.0f} cm del eje central): la pared "
+                f"del cono tapa la medición, el valor puede no ser exacto."
+            )
 
     if altura_alimento_m <= altura_cono_m:
         # el alimento todavía no llena el cono: el volumen ocupado crece
@@ -54,6 +72,7 @@ def calcular_nivel(
         "volumen_m3": round(vol_m3, 3),
         "porcentaje": round(min(porcentaje, 100.0), 2),
         "kg_estimados": round(kg_estimados, 1),
+        "advertencia": advertencia,
     }
 
 

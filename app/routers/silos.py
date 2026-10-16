@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.dependencies import require_roles
 from app.models import Lectura, RolUsuario, Sensor, Silo
-from app.schemas import NivelActual, SiloCreate, SiloDetalleOut, SiloOut
+from app.schemas import NivelActual, SiloCreate, SiloDetalleOut, SiloOut, SiloUpdate
 from app.services.geometry import calcular_nivel
 
 router = APIRouter(prefix="/silos", tags=["silos"])
@@ -49,6 +49,7 @@ def detalle_silo(
                 diametro_m=float(silo.diametro_m),
                 densidad_kg_m3=float(silo.densidad_alimento_kg_m3),
                 altura_zona_ciega_cm=float(silo.altura_zona_ciega_cm),
+                offset_sensor_cm=float(silo.offset_sensor_cm) if silo.offset_sensor_cm is not None else 0.0,
             )
             nivel_actual = NivelActual(
                 distancia_cm=float(ultima.distancia_cm),
@@ -71,6 +72,30 @@ def crear_silo(
 ):
     silo = Silo(**payload.model_dump())
     db.add(silo)
+    db.commit()
+    db.refresh(silo)
+    return silo
+
+
+@router.patch("/{silo_id}", response_model=SiloOut)
+def actualizar_silo(
+    silo_id: int,
+    payload: SiloUpdate,
+    db: Session = Depends(get_db),
+    _usuario=Depends(require_roles(RolUsuario.admin)),
+):
+    silo = db.query(Silo).filter(Silo.id == silo_id).first()
+    if silo is None:
+        raise HTTPException(status_code=404, detail="Silo no encontrado")
+
+    # exclude_unset deja pasar un null explícito (por ejemplo, borrar el
+    # offset o el lead time), pero el nombre nunca puede quedar vacío.
+    datos = payload.model_dump(exclude_unset=True)
+    if datos.get("nombre") is None:
+        datos.pop("nombre", None)
+    for campo, valor in datos.items():
+        setattr(silo, campo, valor)
+
     db.commit()
     db.refresh(silo)
     return silo
